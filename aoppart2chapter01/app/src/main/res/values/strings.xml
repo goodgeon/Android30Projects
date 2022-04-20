@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">aop-part2-chapter01</string>
+    <string name="height">Height</string>
+    <string name="weight">Weight</string>
+    <string name="confirm">Confirm</string>
+    <string name="bmiTitle">BMI :</string>
+    <string name="resultTitle">result :</string>
+</resources>
