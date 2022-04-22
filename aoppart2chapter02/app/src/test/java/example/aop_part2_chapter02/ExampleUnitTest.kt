@@ -1,5 +1,6 @@
 package example.aop_part2_chapter02
 
+import android.widget.NumberPicker
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -12,6 +13,9 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+//        assertEquals(4, 2 + 2)
+        val aa = MainActivity()
+        aa.initNumberPicker()
+        assertEquals(45,aa.numberPicker.maxValue)
     }
 }
