@@ -19,6 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".DiaryActivity"
+            android:theme="@style/Theme.03SECRETDIARY.NoActionBar" />
     </application>
 
 </manifest>

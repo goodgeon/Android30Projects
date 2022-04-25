@@ -1,5 +1,6 @@
 package jp.co.info.ais.a03secretdiary
 
+import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -67,8 +68,7 @@ class MainActivity : AppCompatActivity() {
             val passwordFromUser = "${numberPicker1.value}${numberPicker2.value}${numberPicker3.value}"
 
             if(passwordPreference.getString("password", "000").equals(passwordFromUser)) {
-                //TODO: to DIARY
-                Toast.makeText(this,"Login success", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, DiaryActivity::class.java))
             } else {
                 showErrorPopup()
             }
