@@ -7,6 +7,7 @@
         <entry key="app/src/main/res/drawable/ic_play.xml" value="0.2075" />
         <entry key="app/src/main/res/drawable/ic_record.xml" value="0.2075" />
         <entry key="app/src/main/res/drawable/ic_stop.xml" value="0.2075" />
+        <entry key="app/src/main/res/drawable/shape_oval_button.xml" value="0.2515" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
       </map>
     </option>
