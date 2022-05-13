@@ -2,17 +2,36 @@ package com.example.recorder
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
+import android.media.MediaRecorder
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 
 class MainActivity : AppCompatActivity() {
     private var state: State = State.BEFORE_RECORDING
+        set(value) {
+            field = value
+            resetButton.isEnabled = value == State.AFTER_RECORDING || value == State.ON_PLAYING
+            recordButton.updateIconWithState(value)
+        }
 
     private val requiredPermissions = arrayOf(Manifest.permission.RECORD_AUDIO)
+
+    private val resetButton: Button by lazy {
+        findViewById(R.id.resetButton)
+    }
 
     private val recordButton: RecordButton by lazy {
         findViewById(R.id.recordButton)
     }
+
+    private val recordingFilePath: String by lazy {
+        "${externalCacheDir?.absolutePath}/recording.3gp"
+    }
+
+    private var recorder: MediaRecorder? = null
+    private var player: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,10 +39,8 @@ class MainActivity : AppCompatActivity() {
 
         requestAudioPermission()
         initViews()
-    }
-
-    private fun initViews() {
-        recordButton.updateIconWithState(state)
+        bindViews()
+        initVariables()
     }
 
     private fun requestAudioPermission() {
@@ -42,6 +59,74 @@ class MainActivity : AppCompatActivity() {
         if(!audioRecordPermissionGranted) {
             finish()
         }
+    }
+
+    private fun initViews() {
+        recordButton.updateIconWithState(state)
+    }
+
+    private fun bindViews() {
+        resetButton.setOnClickListener {
+            stopPlaying()
+            state = State.BEFORE_RECORDING
+        }
+
+        recordButton.setOnClickListener {
+            when(state) {
+                State.BEFORE_RECORDING -> {
+                    startRecording()
+                }
+                State.ON_RECORDING -> {
+                    stopRecording()
+                }
+                State.AFTER_RECORDING -> {
+                    startPlaying()
+                }
+                State.ON_PLAYING -> {
+                    stopPlaying()
+                }
+            }
+        }
+    }
+
+    private fun initVariables() {
+        state = State.BEFORE_RECORDING
+    }
+
+    private fun startRecording() {
+        recorder = MediaRecorder().apply {
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+            setOutputFile(recordingFilePath)
+            prepare()
+        }
+        recorder?.start()
+        state = State.ON_RECORDING
+    }
+
+    private fun stopRecording() {
+        recorder?.run {
+            stop()
+            release()
+        }
+        recorder = null
+        state = State.AFTER_RECORDING
+    }
+
+    private fun startPlaying() {
+        player = MediaPlayer().apply {
+            setDataSource(recordingFilePath)
+            prepare()
+        }
+        player?.start()
+        state = State.ON_PLAYING
+    }
+
+    private fun stopPlaying() {
+        player?.release()
+        player = null
+        state = State.AFTER_RECORDING
     }
 
     companion object {
