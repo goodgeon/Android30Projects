@@ -30,7 +30,7 @@
         android:layout_marginTop="30dp"
         android:textSize="20sp"
         android:textStyle="bold"
-        tools:text="Firebase TOKEN" />
+        android:text="Firebase TOKEN" />
 
     <TextView
         android:id="@+id/firebaseTokenTextView"
@@ -39,7 +39,8 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="12dp"
         android:text="Loading..."
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textIsSelectable="true"/>
 
 
 </LinearLayout>
