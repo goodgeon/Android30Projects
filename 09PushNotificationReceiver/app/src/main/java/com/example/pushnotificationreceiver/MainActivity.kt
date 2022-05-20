@@ -2,6 +2,7 @@ package com.example.pushnotificationreceiver
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import com.google.firebase.messaging.FirebaseMessaging
 
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if(task.isSuccessful) {
                 firebaseToken.text = task.result
+                Log.d("TOKEN", task.result)
             }
         }
     }
