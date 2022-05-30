@@ -13,10 +13,7 @@ import com.example.a12bookreview.adapter.BookAdapter
 import com.example.a12bookreview.adapter.HistoryAdapter
 import com.example.a12bookreview.api.BookService
 import com.example.a12bookreview.databinding.ActivityMainBinding
-import com.example.a12bookreview.model.AppDatabase
-import com.example.a12bookreview.model.BestSellerDto
-import com.example.a12bookreview.model.History
-import com.example.a12bookreview.model.SearchBookDto
+import com.example.a12bookreview.model.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         initHistoryRecyclerView()
         initSearchEditText()
 
-        db = Room.databaseBuilder(this, AppDatabase::class.java, "BookSearchDB").build()
+        db = getAppDatabase(this)
 
         val retrofit = Retrofit.Builder()
             .baseUrl("https://book.interpark.com")
