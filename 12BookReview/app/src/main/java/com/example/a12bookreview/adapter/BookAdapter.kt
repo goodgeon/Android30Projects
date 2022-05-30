@@ -1,5 +1,6 @@
 package com.example.a12bookreview.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -9,12 +10,16 @@ import com.bumptech.glide.Glide
 import com.example.a12bookreview.databinding.ItemBookBinding
 import com.example.a12bookreview.model.Book
 
-class BookAdapter: ListAdapter<Book, BookAdapter.BookItemViewHolder>(diffUtil) {
+class BookAdapter(private val itemClickedListener: (Book) -> Unit): ListAdapter<Book, BookAdapter.BookItemViewHolder>(diffUtil) {
     inner class BookItemViewHolder(private var binding: ItemBookBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(bookModel: Book) {
             binding.titleTextView.text = bookModel.title
             binding.descriptionTextView.text = bookModel.description
             Glide.with(binding.coverImageView.context).load(bookModel.coverSmallUrl).into(binding.coverImageView)
+
+            binding.root.setOnClickListener {
+                itemClickedListener(bookModel)
+            }
         }
     }
 
