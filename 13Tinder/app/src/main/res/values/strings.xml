@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">13Tinder</string>
+
+    <string name="facebook_app_id">2675278389283578</string>
+    <string name="fb_login_protocol_scheme">fb2675278389283578</string>
+    <string name="facebook_client_token">870f9967ed49b6d610611b21332ffd4e</string>
 </resources>
