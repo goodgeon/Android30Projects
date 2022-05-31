@@ -51,4 +51,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
 
     implementation 'com.facebook.android:facebook-login:latest.release'
+    implementation 'com.github.yuyakaido:cardstackview:2.3.4'
 }
