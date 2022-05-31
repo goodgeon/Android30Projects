@@ -2,6 +2,7 @@ package com.example.a13tinder
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -15,6 +16,7 @@ import com.google.firebase.auth.FacebookAuthCredential
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 class LoginActivity: AppCompatActivity() {
@@ -57,7 +59,7 @@ class LoginActivity: AppCompatActivity() {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if(task.isSuccessful) {
-                        finish()
+                        handleSuccessLogin()
                     }else {
                         Toast.makeText(this, "로그인에 실패했습니다", Toast.LENGTH_SHORT).show()
                     }
@@ -90,7 +92,7 @@ class LoginActivity: AppCompatActivity() {
                 auth.signInWithCredential(credential)
                     .addOnCompleteListener { task ->
                         if(task.isSuccessful) {
-                            finish()
+                            handleSuccessLogin()
                         } else {
                             Toast.makeText(this@LoginActivity, "페이스북 로그인에 실패했습니다", Toast.LENGTH_SHORT).show()
                         }
@@ -118,6 +120,20 @@ class LoginActivity: AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         callbackManager.onActivityResult(requestCode,resultCode,data)
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun handleSuccessLogin() {
+        if(auth.currentUser == null) {
+            Toast.makeText(this, "로그인에 실패했습니다", Toast.LENGTH_SHORT).show()
+        }
+
+        val userId = auth.currentUser?.uid.orEmpty()
+        val currentUserDB = Firebase.database.reference.child("Users").child(userId)
+        val user = mutableMapOf<String, Any>()
+        user["userId"] = userId
+        currentUserDB.updateChildren(user)
+
+        finish()
     }
 
 
