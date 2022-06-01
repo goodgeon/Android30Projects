@@ -1,24 +1,30 @@
 package com.example.a13tinder
 
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.yuyakaido.android.cardstackview.CardStackLayoutManager
+import com.yuyakaido.android.cardstackview.CardStackListener
+import com.yuyakaido.android.cardstackview.CardStackView
+import com.yuyakaido.android.cardstackview.Direction
 
 class LikeActivity: AppCompatActivity() {
     private var auth: FirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var userDB: DatabaseReference
+    private var adapter = CardItemAdapter()
+    private val cardItems = mutableListOf<CardItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_like)
 
         userDB = Firebase.database.reference.child("Users")
 
@@ -27,14 +33,74 @@ class LikeActivity: AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.child("name").value == null) {
                     showNameInputPopup()
+                    return
+                }
+
+                getUnSelectedUsers()
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
+        initCardStackView()
+    }
+
+    private fun getUnSelectedUsers() {
+        userDB.addChildEventListener(object: ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                Log.d("GG", "onChildAdded")
+                if(snapshot.child("userId").toString() != getCurrentUserID()
+                    && snapshot.child("likedBy").child("like").hasChild(getCurrentUserID()).not()
+                        &&snapshot.child("likedBy").child("dislike").hasChild(getCurrentUserID()).not()) {
+
+                    val userId = snapshot.child("userId").value.toString()
+                    var name = "undecided"
+
+                    if(snapshot.child("name").value != null) {
+                        name = snapshot.child("name").value.toString()
+                    }
+
+                    cardItems.add(CardItem(userId,name))
+                    adapter.submitList(cardItems)
+                    adapter.notifyDataSetChanged()
                 }
             }
 
-            override fun onCancelled(error: DatabaseError) {
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                cardItems.find { cardItem ->
+                    cardItem.userId == snapshot.child("userId").value.toString()
+                }?.let {
+                    it.name = snapshot.child("name").value.toString()
+                }
+
+                adapter.submitList(cardItems)
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    private fun initCardStackView() {
+        val stackView = findViewById<CardStackView>(R.id.cardStackView)
+        stackView.layoutManager = CardStackLayoutManager(this, object: CardStackListener{
+            override fun onCardDragging(direction: Direction?, ratio: Float) {}
+
+            override fun onCardSwiped(direction: Direction?) {
                 TODO("Not yet implemented")
             }
 
+            override fun onCardRewound() {}
+
+            override fun onCardCanceled() {}
+
+            override fun onCardAppeared(view: View?, position: Int) {}
+
+            override fun onCardDisappeared(view: View?, position: Int) {}
+
         })
+        stackView.adapter = adapter
     }
 
     private fun getCurrentUserID(): String {
@@ -70,5 +136,7 @@ class LikeActivity: AppCompatActivity() {
         user["userId"] = userId
         user["name"] = name
         currentUserDB.updateChildren(user)
+
+        getUnSelectedUsers()
     }
 }
