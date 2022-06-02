@@ -21,6 +21,27 @@ class LikeActivity: AppCompatActivity() {
     private lateinit var userDB: DatabaseReference
     private var adapter = CardItemAdapter()
     private val cardItems = mutableListOf<CardItem>()
+    private val manager: CardStackLayoutManager by lazy {
+        CardStackLayoutManager(this, object: CardStackListener{
+            override fun onCardDragging(direction: Direction?, ratio: Float) {}
+
+            override fun onCardSwiped(direction: Direction?) {
+                when(direction) {
+                    Direction.Right -> like()
+                    Direction.Left -> disLike()
+                }
+            }
+
+            override fun onCardRewound() {}
+
+            override fun onCardCanceled() {}
+
+            override fun onCardAppeared(view: View?, position: Int) {}
+
+            override fun onCardDisappeared(view: View?, position: Int) {}
+
+        })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,23 +105,26 @@ class LikeActivity: AppCompatActivity() {
 
     private fun initCardStackView() {
         val stackView = findViewById<CardStackView>(R.id.cardStackView)
-        stackView.layoutManager = CardStackLayoutManager(this, object: CardStackListener{
-            override fun onCardDragging(direction: Direction?, ratio: Float) {}
-
-            override fun onCardSwiped(direction: Direction?) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onCardRewound() {}
-
-            override fun onCardCanceled() {}
-
-            override fun onCardAppeared(view: View?, position: Int) {}
-
-            override fun onCardDisappeared(view: View?, position: Int) {}
-
-        })
+        stackView.layoutManager = manager
         stackView.adapter = adapter
+    }
+
+    private fun like() {
+        val card = cardItems[manager.topPosition - 1]
+        cardItems.removeFirst()
+
+        userDB.child(card.userId).child("likedBy").child("like").child(getCurrentUserID()).setValue(true)
+
+        Toast.makeText(this, "${card.name}님을 Like 하셨습니다", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun disLike() {
+        val card = cardItems[manager.topPosition - 1]
+        cardItems.removeFirst()
+
+        userDB.child(card.userId).child("likedBy").child("dislike").child(getCurrentUserID()).setValue(true)
+
+        Toast.makeText(this, "${card.name}님을 Dislike 하셨습니다", Toast.LENGTH_SHORT).show()
     }
 
     private fun getCurrentUserID(): String {
