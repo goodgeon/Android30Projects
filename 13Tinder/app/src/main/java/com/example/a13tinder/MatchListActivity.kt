@@ -5,6 +5,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.a13tinder.DBKey.Companion.LIKED_BY
+import com.example.a13tinder.DBKey.Companion.MATCH
+import com.example.a13tinder.DBKey.Companion.NAME
+import com.example.a13tinder.DBKey.Companion.USERS
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -24,13 +28,13 @@ class MatchListActivity: AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
-        usersDB = FirebaseDatabase.getInstance().reference.child("Users")
+        usersDB = FirebaseDatabase.getInstance().reference.child(USERS)
 
         getMatchUsers()
     }
 
     private fun getMatchUsers() {
-        val matchedDB = usersDB.child(getCurrentUserID()).child("likedBy").child("match")
+        val matchedDB = usersDB.child(getCurrentUserID()).child(LIKED_BY).child(MATCH)
         matchedDB.addChildEventListener(object: ChildEventListener{
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 if(snapshot.key?.isNotEmpty() == true) {
@@ -53,7 +57,7 @@ class MatchListActivity: AppCompatActivity() {
         val matchedDB = usersDB.child(userId)
         matchedDB.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                cardItems.add(CardItem(userId,snapshot.child("name").value.toString()))
+                cardItems.add(CardItem(userId,snapshot.child(NAME).value.toString()))
                 adapter.submitList(cardItems)
             }
 

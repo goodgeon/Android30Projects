@@ -22,7 +22,6 @@ class MainActivity : AppCompatActivity() {
         if (auth.currentUser == null) {
             startActivity(Intent(this, LoginActivity::class.java))
         } else {
-            Log.d("GG","FINISH!!")
             startActivity(Intent(this, LikeActivity::class.java))
             finish()
         }

@@ -9,6 +9,13 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.a13tinder.DBKey.Companion.DIS_LIKE
+import com.example.a13tinder.DBKey.Companion.LIKE
+import com.example.a13tinder.DBKey.Companion.LIKED_BY
+import com.example.a13tinder.DBKey.Companion.MATCH
+import com.example.a13tinder.DBKey.Companion.NAME
+import com.example.a13tinder.DBKey.Companion.USERS
+import com.example.a13tinder.DBKey.Companion.USER_ID
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -49,12 +56,12 @@ class LikeActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_like)
 
-        userDB = Firebase.database.reference.child("Users")
+        userDB = Firebase.database.reference.child(USERS)
 
         val currentUserDB = userDB.child(getCurrentUserID())
         currentUserDB.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if(snapshot.child("name").value == null) {
+                if(snapshot.child(NAME).value == null) {
                     showNameInputPopup()
                     return
                 }
@@ -74,15 +81,15 @@ class LikeActivity: AppCompatActivity() {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 Log.d("GG", "onChildAdded")
 
-                if(snapshot.child("userId").value != getCurrentUserID()
-                    && snapshot.child("likedBy").child("like").hasChild(getCurrentUserID()).not()
-                        &&snapshot.child("likedBy").child("dislike").hasChild(getCurrentUserID()).not()) {
+                if(snapshot.child(USER_ID).value != getCurrentUserID()
+                    && snapshot.child(LIKED_BY).child(LIKE).hasChild(getCurrentUserID()).not()
+                        &&snapshot.child(LIKED_BY).child(DIS_LIKE).hasChild(getCurrentUserID()).not()) {
 
-                    val userId = snapshot.child("userId").value.toString()
+                    val userId = snapshot.child(USER_ID).value.toString()
                     var name = "undecided"
 
-                    if(snapshot.child("name").value != null) {
-                        name = snapshot.child("name").value.toString()
+                    if(snapshot.child(NAME).value != null) {
+                        name = snapshot.child(NAME).value.toString()
                     }
 
                     cardItems.add(CardItem(userId,name))
@@ -93,9 +100,9 @@ class LikeActivity: AppCompatActivity() {
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 cardItems.find { cardItem ->
-                    cardItem.userId == snapshot.child("userId").value.toString()
+                    cardItem.userId == snapshot.child(USER_ID).value.toString()
                 }?.let {
-                    it.name = snapshot.child("name").value.toString()
+                    it.name = snapshot.child(NAME).value.toString()
                 }
 
                 adapter.submitList(cardItems)
@@ -134,7 +141,7 @@ class LikeActivity: AppCompatActivity() {
         val card = cardItems[manager.topPosition - 1]
         cardItems.removeFirst()
 
-        userDB.child(card.userId).child("likedBy").child("like").child(getCurrentUserID()).setValue(true)
+        userDB.child(card.userId).child(LIKED_BY).child(LIKE).child(getCurrentUserID()).setValue(true)
         saveMatchIfOtherLikeMe(card.userId)
 
 
@@ -145,18 +152,18 @@ class LikeActivity: AppCompatActivity() {
         val card = cardItems[manager.topPosition - 1]
         cardItems.removeFirst()
 
-        userDB.child(card.userId).child("likedBy").child("dislike").child(getCurrentUserID()).setValue(true)
+        userDB.child(card.userId).child(LIKED_BY).child(DIS_LIKE).child(getCurrentUserID()).setValue(true)
 
         Toast.makeText(this, "${card.name}님을 Dislike 하셨습니다", Toast.LENGTH_SHORT).show()
     }
 
     private fun saveMatchIfOtherLikeMe(otherUserId: String) {
-        val otherUserDB = userDB.child(getCurrentUserID()).child("likedBy").child("like").child(otherUserId)
+        val otherUserDB = userDB.child(getCurrentUserID()).child(LIKED_BY).child(LIKE).child(otherUserId)
         otherUserDB.addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.value == true) {
-                    userDB.child(getCurrentUserID()).child("likedBy").child("match").child(otherUserId).setValue(true)
-                    userDB.child(otherUserId).child("likedBy").child("match").child(getCurrentUserID()).setValue(true)
+                    userDB.child(getCurrentUserID()).child(LIKED_BY).child(MATCH).child(otherUserId).setValue(true)
+                    userDB.child(otherUserId).child(LIKED_BY).child(MATCH).child(getCurrentUserID()).setValue(true)
                 }
             }
 
@@ -194,8 +201,8 @@ class LikeActivity: AppCompatActivity() {
         val userId = getCurrentUserID()
         val currentUserDB = userDB.child(userId)
         val user = mutableMapOf<String, Any>()
-        user["userId"] = userId
-        user["name"] = name
+        user[USER_ID] = userId
+        user[NAME] = name
         currentUserDB.updateChildren(user)
 
         getUnSelectedUsers()
