@@ -1,5 +1,6 @@
 package com.example.a14secondhandtrade.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.a14secondhandtrade.DBKey.Companion.DB_ARTICLES
 import com.example.a14secondhandtrade.R
 import com.example.a14secondhandtrade.databinding.FragmentHomeBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -62,6 +64,17 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
 
         fragmentHomeBinding.articleRecyclerView.layoutManager = LinearLayoutManager(context)
         fragmentHomeBinding.articleRecyclerView.adapter = articleAdapter
+
+        fragmentHomeBinding.addFloatingButton.setOnClickListener {
+            context?.let {
+//                if (auth.currentUser != null) {
+                    startActivity(Intent(requireContext(), AddArticleActivity::class.java))
+//                } else {
+//                    Snackbar.make(view, "로그인 후 사용해 주세요", Snackbar.LENGTH_SHORT).show()
+//                }
+            }
+
+        }
 
         articleDB.addChildEventListener(listener)
     }
