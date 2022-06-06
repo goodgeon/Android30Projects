@@ -34,7 +34,6 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
             val articleModel = snapshot.getValue(ArticleModel::class.java)
 
             articleModel ?: return
-            Log.d("GG", "onChildAdded - ${articleModel?.title}")
 
             articleList.add(articleModel)
 
@@ -60,31 +59,52 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
         articleDB = FirebaseDatabase.getInstance().reference.child(DB_ARTICLES)
         userDB = FirebaseDatabase.getInstance().reference.child(DB_USERS)
 
-        Log.d("GG", "init adapter")
         articleAdapter = ArticleAdapter(
             onItemClicked = { articleModel ->
                 if(auth.currentUser != null) {
                     auth.currentUser?.let { currentUser ->
                         if(currentUser.uid != articleModel.sellerId ) {
 
+                            val key = "${currentUser.uid}_${articleModel.sellerId}_${articleModel.title}"
+
                             val chatRoom = ChatListItem(
                                 currentUser.uid,
                                 articleModel.sellerId,
                                 articleModel.title,
-                                System.currentTimeMillis()
+                                key
                             )
 
                             userDB.child(currentUser.uid)
-                                .child(CHILD_CHAT)
-                                .push()
-                                .setValue(chatRoom)
+                                .child(CHILD_CHAT).orderByChild("key").equalTo(key).addListenerForSingleValueEvent(object: ValueEventListener{
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        snapshot.children.forEach {
+                                        }
+                                        if(snapshot.exists()) {
+                                            Snackbar.make(view, "이미 생성된 채팅방입니다", Snackbar.LENGTH_SHORT).show()
+                                            return
+                                        } else {
+                                            userDB.child(currentUser.uid)
+                                                .child(CHILD_CHAT)
+                                                .child(key).setValue(chatRoom)
+                                            Snackbar.make(view, "채팅방이 생성되었습니다", Snackbar.LENGTH_SHORT).show()
+                                        }
 
-                            userDB.child(articleModel.sellerId)
-                                .child(CHILD_CHAT)
-                                .push()
-                                .setValue(chatRoom)
+                                    }
 
-                            Snackbar.make(view, "채팅방이 생성되었습니다", Snackbar.LENGTH_SHORT).show()
+                                    override fun onCancelled(error: DatabaseError) {
+                                    }
+
+                                })
+//                            userDB.child(currentUser.uid)
+//                                .child(CHILD_CHAT)
+//                                .push()
+//                                .setValue(chatRoom)
+//
+//                            userDB.child(articleModel.sellerId)
+//                                .child(CHILD_CHAT)
+//                                .push()
+//                                .setValue(chatRoom)
+
                         } else {
                             Snackbar.make(view, "내가 등록한 아이템입니다", Snackbar.LENGTH_SHORT).show()
                         }
@@ -94,10 +114,6 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
                 }
             }
         )
-//        articleAdapter.submitList(mutableListOf(
-//            ArticleModel("aaa", "title1", 1000000, "5000원", ""),
-//            ArticleModel("bbb", "title2", 2000000, "10000원", "")
-//        ))
 
         fragmentHomeBinding.articleRecyclerView.layoutManager = LinearLayoutManager(context)
         fragmentHomeBinding.articleRecyclerView.adapter = articleAdapter

@@ -28,7 +28,6 @@ class MyPageFragment: Fragment(R.layout.fragment_mypage) {
             binding?.let { binding ->
                 val email = binding.emailEditText.text.toString()
                 val password = binding.passwordEditText.text.toString()
-                Log.d("GG", "auth.currentUser2: ${auth.currentUser?.email}")
 
                 if (auth.currentUser == null) {
                     auth.signInWithEmailAndPassword(email, password)
@@ -63,7 +62,6 @@ class MyPageFragment: Fragment(R.layout.fragment_mypage) {
                     if(task.isSuccessful) {
                         Toast.makeText(context, "회원가입에 성공했습니다.", Toast.LENGTH_SHORT).show()
                         successSignIn()
-                        Log.d("GG", "auth.currentUser1: ${auth.currentUser?.email}")
                     } else {
                         Toast.makeText(context, "회원가입에 실패했습니다. 이미 가입한 이메일일 수 있습니다", Toast.LENGTH_SHORT).show()
                     }

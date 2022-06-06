@@ -47,7 +47,7 @@ class ChatRoomActivity: AppCompatActivity() {
         binding.chatRecyclerView.adapter = adapter
         binding.chatRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        val chatKey = intent.getLongExtra("chatKey", -1)
+        val chatKey = intent.getStringExtra("chatKey")
         binding.sendButton.setOnClickListener {
             auth.currentUser?.let { currentUser ->
                 val model = ChatItem(
@@ -67,10 +67,8 @@ class ChatRoomActivity: AppCompatActivity() {
 
         chatDB.child(chatKey.toString()).addChildEventListener(object: ChildEventListener{
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                Log.d("GG", "ChatRoomActivity - onChildAdded")
                 val model = snapshot.getValue(ChatItem::class.java)
                 model ?: return
-                Log.d("GG", "model: ${model.toString()}")
                 chatList.add(model)
                 adapter.submitList(chatList)
                 adapter.notifyDataSetChanged()

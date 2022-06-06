@@ -55,7 +55,6 @@ class ChatListFragment : Fragment(R.layout.fragment_chatlist) {
 
         auth.currentUser?.let { currentUser ->
             val chatDB = Firebase.database.reference.child(DB_USERS).child(currentUser.uid)
-            Log.d("GG", "currentUser: ${currentUser.uid}")
 //            chatDB.child(CHILD_CHAT).addListenerForSingleValueEvent(object: ValueEventListener {
 //                override fun onDataChange(snapshot: DataSnapshot) {
 //                    Log.d("GG", "addListenerForSingleValueEvent")
@@ -76,7 +75,6 @@ class ChatListFragment : Fragment(R.layout.fragment_chatlist) {
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     val model = snapshot.getValue(ChatListItem::class.java)
                     model ?: return
-                    Log.d("GG", "onChildAdded2 - ${model.itemTitle}")
                     chatRoomList.add(model)
                     chatListAdapter.submitList(chatRoomList)
                 }
