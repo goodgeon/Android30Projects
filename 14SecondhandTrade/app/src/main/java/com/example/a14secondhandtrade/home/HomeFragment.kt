@@ -6,8 +6,11 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.a14secondhandtrade.DBKey.Companion.CHILD_CHAT
 import com.example.a14secondhandtrade.DBKey.Companion.DB_ARTICLES
+import com.example.a14secondhandtrade.DBKey.Companion.DB_USERS
 import com.example.a14secondhandtrade.R
+import com.example.a14secondhandtrade.chatlist.ChatListItem
 import com.example.a14secondhandtrade.databinding.FragmentHomeBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -18,6 +21,7 @@ import com.google.firebase.ktx.Firebase
 class HomeFragment: Fragment(R.layout.fragment_home) {
     private lateinit var articleAdapter: ArticleAdapter
     private lateinit var articleDB: DatabaseReference
+    private lateinit var userDB: DatabaseReference
 
     private var binding: FragmentHomeBinding? = null
     private val auth: FirebaseAuth by lazy {
@@ -27,10 +31,10 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
     private val articleList = mutableListOf<ArticleModel>()
     private val listener = object: ChildEventListener{
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-            Log.d("GG", "onChildAdded")
             val articleModel = snapshot.getValue(ArticleModel::class.java)
 
             articleModel ?: return
+            Log.d("GG", "onChildAdded - ${articleModel?.title}")
 
             articleList.add(articleModel)
 
@@ -54,9 +58,42 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
         articleList.clear()
 
         articleDB = FirebaseDatabase.getInstance().reference.child(DB_ARTICLES)
+        userDB = FirebaseDatabase.getInstance().reference.child(DB_USERS)
 
         Log.d("GG", "init adapter")
-        articleAdapter = ArticleAdapter()
+        articleAdapter = ArticleAdapter(
+            onItemClicked = { articleModel ->
+                if(auth.currentUser != null) {
+                    auth.currentUser?.let { currentUser ->
+                        if(currentUser.uid != articleModel.sellerId ) {
+
+                            val chatRoom = ChatListItem(
+                                currentUser.uid,
+                                articleModel.sellerId,
+                                articleModel.title,
+                                System.currentTimeMillis()
+                            )
+
+                            userDB.child(currentUser.uid)
+                                .child(CHILD_CHAT)
+                                .push()
+                                .setValue(chatRoom)
+
+                            userDB.child(articleModel.sellerId)
+                                .child(CHILD_CHAT)
+                                .push()
+                                .setValue(chatRoom)
+
+                            Snackbar.make(view, "채팅방이 생성되었습니다", Snackbar.LENGTH_SHORT).show()
+                        } else {
+                            Snackbar.make(view, "내가 등록한 아이템입니다", Snackbar.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    Snackbar.make(view, "로그인 후 이용해 주세요", Snackbar.LENGTH_SHORT).show()
+                }
+            }
+        )
 //        articleAdapter.submitList(mutableListOf(
 //            ArticleModel("aaa", "title1", 1000000, "5000원", ""),
 //            ArticleModel("bbb", "title2", 2000000, "10000원", "")
