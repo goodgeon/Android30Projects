@@ -1,0 +1,44 @@
+{
+    "items": [
+        {
+            "id": 1,
+            "title": "item1",
+            "price" : "23,000원",
+            "lat": 37.4979441578994,
+            "lng": 127.0278365929456,
+            "imgUrl": "https://i.picsum.photos/id/509/200/200.jpg?hmac=F3VucjvZ_2eEx_ObPM7NJ_Ymq5jESSGCuXo_8japTZc"
+        },
+        {
+            "id": 2,
+            "title": "item2",
+            "price" : "23,000원",
+            "lat": 37.498187214006364,
+            "lng": 127.02710717009892,
+            "imgUrl": "https://i.picsum.photos/id/45/200/200.jpg?hmac=D9U6XUZsrWfv7UlIM9gKYtENGZ6jeG3H6qGxMT5gxsY"
+        },
+        {
+            "id": 3,
+            "title": "item3",
+            "price" : "23,000원",
+            "lat": 37.49742332072054,
+            "lng": 127.02742811615146,
+            "imgUrl": "https://i.picsum.photos/id/117/200/200.jpg?hmac=hAXY0lMbkjkxYIKxW0UjtazVquGY1NCu3ruHLJGc4gs"
+        },
+        {
+            "id": 4,
+            "title": "item4",
+            "price" : "23,000원",
+            "lat": 37.49890480361113,
+            "lng": 127.02687375478797,
+            "imgUrl": "https://i.picsum.photos/id/832/200/200.jpg?hmac=V4CRQyK7KVP2wBYsEhpcpP8wSdwyU5c-yTeMm37uOOo"
+        },
+        {
+            "id": 5,
+            "title": "item1",
+            "price" : "23,000원",
+            "lat": 37.49884693373735,
+            "lng": 127.029390263609,
+            "imgUrl": "https://i.picsum.photos/id/1061/200/200.jpg?hmac=PiYsc13E4RCmWNhJHpV_tSaL3hzcJl4pkKtDXmQJ_uI"
+        }
+    ]
+}
