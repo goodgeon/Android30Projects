@@ -1,6 +1,6 @@
 # Android30Projects
 
-## 1. BMICalculator
+<!-- ## 1. BMICalculator
 <img src="img/01BMICalculator1.png" width="300"> <img src="img/01BMICalculator2.png" width="300">  
 
 ## 2. Lotto
@@ -43,4 +43,4 @@
 <img src="img/14SecondhandTrade1.png" width="300"> <img src="img/14SecondhandTrade2.png" width="300"> <img src="img/14SecondhandTrade3.png" width="300">  
 
 ## 15. Airbnb
-<img src="img/15Airbnb1.png" width="300"> <img src="img/15Airbnb2.png" width="300">  
+<img src="img/15Airbnb1.png" width="300"> <img src="img/15Airbnb2.png" width="300">   -->
